@@ -164,10 +164,11 @@ static NSInteger const noDataDefaultDuration = 3;
 {
     if(_skipButton == nil)
     {
+        float n = [UIScreen mainScreen].bounds.size.width/1242.f;
         _skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _skipButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-70,30, 60, 30);
+        _skipButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-459*n,1998*n, 369*n, 120*n);
         _skipButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];
-        _skipButton.layer.cornerRadius = 15;
+        _skipButton.layer.cornerRadius = 5;
         _skipButton.layer.masksToBounds = YES;
         [_skipButton xh_setEnlargedEdgeWithTop:10 left:5 bottom:10 right:5];
         _skipButton.titleLabel.font = [UIFont systemFontOfSize:13.5];
@@ -190,18 +191,18 @@ static NSInteger const noDataDefaultDuration = 3;
             break;
         case SkipTypeTime:
             
-            [_skipButton setTitle:[NSString stringWithFormat:@"%ld S",(long)duration] forState:UIControlStateNormal];
+            [_skipButton setTitle:[NSString stringWithFormat:@"%ld秒",(long)duration] forState:UIControlStateNormal];
             
             break;
         case SkipTypeText:
             
-            [_skipButton setTitle:@"跳过" forState:UIControlStateNormal];
+            [_skipButton setTitle:@"跳过广告" forState:UIControlStateNormal];
             
             break;
             
         case SkipTypeTimeText:
             
-            [_skipButton setTitle:[NSString stringWithFormat:@"%ld 跳过",(long)duration] forState:UIControlStateNormal];
+            [_skipButton setTitle:[NSString stringWithFormat:@"跳过广告丨 %ld秒",(long)duration] forState:UIControlStateNormal];
             
             break;
 
