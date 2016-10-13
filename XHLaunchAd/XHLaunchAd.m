@@ -190,7 +190,7 @@ static NSInteger const noDataDefaultDuration = 3;
             break;
         case SkipTypeTime:
             
-            [_skipButton setTitle:[NSString stringWithFormat:@"%ld S",duration] forState:UIControlStateNormal];
+            [_skipButton setTitle:[NSString stringWithFormat:@"%ld S",(long)duration] forState:UIControlStateNormal];
             
             break;
         case SkipTypeText:
@@ -201,7 +201,7 @@ static NSInteger const noDataDefaultDuration = 3;
             
         case SkipTypeTimeText:
             
-            [_skipButton setTitle:[NSString stringWithFormat:@"%ld 跳过",duration] forState:UIControlStateNormal];
+            [_skipButton setTitle:[NSString stringWithFormat:@"%ld 跳过",(long)duration] forState:UIControlStateNormal];
             
             break;
 
