@@ -28,12 +28,13 @@ static NSInteger const noDataDefaultDuration = 3;
 @property(nonatomic,assign)SkipType skipType;
 @property(nonatomic,assign)BOOL isShowFinish;
 @property(nonatomic,assign)BOOL isClick;
+@property(nonatomic,copy)waitForFinish waitFinish;
 @end
 @implementation XHLaunchAd
 
-+(void)showWithAdFrame:(CGRect)frame setAdImage:(setAdImageBlock)setAdImage showFinish:(showFinishBlock)showFinish
++(void)showWithAdFrame:(CGRect)frame setAdImage:(setAdImageBlock)setAdImage showFinishWithJump:(clickJump)clickJump showFinishWithWait:(showFinishBlock)waitForFinish
 {
-    XHLaunchAd *AdVC = [[XHLaunchAd alloc] initWithFrame:frame showFinish:showFinish];
+    XHLaunchAd *AdVC = [[XHLaunchAd alloc] initWithFrame:frame showFinishWithClickJump:clickJump whitWait:waitForFinish];
     [[UIApplication sharedApplication].delegate window].rootViewController = AdVC;
     if(setAdImage) setAdImage(AdVC);
 }
@@ -49,6 +50,46 @@ static NSInteger const noDataDefaultDuration = 3;
     [_adImgView xh_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:nil options:options completed:completedBlock];
 }
 
+/* 添加加载本地图片接口 */
++(void)showWithAdFrame:(CGRect)frame setLocalAdImagePath:(setAdImageBlock)setAdImage showFinish:(showFinishBlock)showFinish {
+    XHLaunchAd *AdVC = [[XHLaunchAd alloc] initWithFrame:frame showFinish:showFinish];
+    [[UIApplication sharedApplication].delegate window].rootViewController = AdVC;
+    if(setAdImage) setAdImage(AdVC);
+}
+/* 加载本地图片并且区分跳过和等待操作 */
++(void)showWithAdFrame:(CGRect)frame setLocalAdImagePath:(setAdImageBlock)setAdImage showFinishWithJump:(clickJump)clickJump showFinishWithWait:(showFinishBlock)waitForFinish {
+    
+    XHLaunchAd *AdVC = [[XHLaunchAd alloc] initWithFrame:frame showFinishWithClickJump:clickJump whitWait:waitForFinish];
+    [[UIApplication sharedApplication].delegate window].rootViewController = AdVC;
+    if(setAdImage) setAdImage(AdVC);
+}
+
+-(void)setLocalImagePath:(NSString *)imagePath duration:(NSInteger)duration skipType:(SkipType)skipType options:(XHWebImageOptions)options completed:(XHWebImageCompletionBlock)completedBlock click:(clickBlock)click
+{
+    if(_isShowFinish) return;
+    _duration = duration;
+    _skipType = skipType;
+    _clickBlock = [click copy];
+    [self setupAdImgViewAndSkipButton];
+    
+    /* image对象加载本地图片 */
+    /* 对于4s进行图片裁剪适配 */
+    BOOL *isFour;
+    CGFloat FourScreenWidth = 320.0f;
+    if ([UIScreen mainScreen].bounds.size.width <= FourScreenWidth) {
+        isFour = YES;
+    } else {
+        isFour = NO;
+    }
+    [self setLocalImageWithDevicesIsFour:isFour withImagePath:imagePath];
+}
+- (void)setLocalImageWithDevicesIsFour:(BOOL)isFour withImagePath:(NSString *)imagePath{
+    _adImgView.image = [UIImage imageWithContentsOfFile:imagePath];
+    if (isFour) {
+        _adImgView.contentMode = UIViewContentModeTop;
+        _adImgView.clipsToBounds = YES;
+    }
+}
 +(void)clearDiskCache
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -96,6 +137,20 @@ static NSInteger const noDataDefaultDuration = 3;
         _adFrame = frame;
         _noDataDuration = noDataDefaultDuration;
         _showFinishBlock = [showFinish copy];
+        [self.view addSubview:self.launchImgView];
+        [self startNoDataDispath_tiemr];
+    }
+    return self;
+}
+- (instancetype)initWithFrame:(CGRect)frame showFinishWithClickJump:(clickJump)clickJump whitWait:(waitForFinish)wait
+{
+    self = [super init];
+    if (self) {
+        
+        _adFrame = frame;
+        _noDataDuration = noDataDefaultDuration;
+        _clickJump = [clickJump copy];
+        _waitFinish = [wait copy];
         [self.view addSubview:self.launchImgView];
         [self startNoDataDispath_tiemr];
     }
@@ -239,7 +294,7 @@ static NSInteger const noDataDefaultDuration = 3;
             {
                 dispatch_source_cancel(_noDataTimer);
                 
-                [self remove];
+                [self removeWithActionIsWait:YES];
             }
             duration--;
         });
@@ -264,7 +319,7 @@ static NSInteger const noDataDefaultDuration = 3;
             {
                 dispatch_source_cancel(_skipButtonTimer);
                 
-                [self remove];
+                [self removeWithActionIsWait:YES];
             }
             _duration--;
         });
@@ -277,7 +332,7 @@ static NSInteger const noDataDefaultDuration = 3;
     {
         self.isClick = NO;
         if (_skipButtonTimer) dispatch_source_cancel(_skipButtonTimer);
-        [self remove];
+        [self removeWithActionIsWait:NO];
     }
 }
 
@@ -337,15 +392,23 @@ static NSInteger const noDataDefaultDuration = 3;
     dispatch_source_cancel(_noDataTimer);
     [self startNoDataDispath_tiemr];
 }
--(void)remove{
-
+-(void)removeWithActionIsWait:(BOOL)isWait{
+    
+   
     [UIView transitionWithView:[[UIApplication sharedApplication].delegate window] duration:0.3 options: UIViewAnimationOptionTransitionCrossDissolve animations:^{
         BOOL oldState=[UIView areAnimationsEnabled];
+        
         [UIView setAnimationsEnabled:NO];
+        
+        if (isWait) {
+            ! _waitFinish ? : _waitFinish();
+        } else {
+            ! _clickJump ? : _clickJump();
+        }
         _isShowFinish = YES;
         if(_showFinishBlock)  _showFinishBlock();
         [UIView setAnimationsEnabled:oldState];
     }completion:NULL];
-
+   
 }
 @end

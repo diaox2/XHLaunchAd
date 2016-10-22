@@ -41,8 +41,13 @@ typedef NS_ENUM(NSInteger,SkipType) {
 typedef void(^clickBlock)();
 typedef void(^setAdImageBlock)(XHLaunchAd*launchAd);
 typedef void(^showFinishBlock)();
+typedef void(^clickJump)();
+typedef void(^waitForFinish)();
 
 @interface XHLaunchAd : UIViewController
+
+
+@property(nonatomic,copy)clickJump clickJump;
 
 /**
  *  未检测到广告数据,启动页停留时间(默认3s)(最小1s)
@@ -62,8 +67,10 @@ typedef void(^showFinishBlock)();
  *  @param setAdImage 设置AdImage回调
  *  @param showFinish 广告显示完成回调
  */
-+(void)showWithAdFrame:(CGRect)frame setAdImage:(setAdImageBlock)setAdImage showFinish:(showFinishBlock)showFinish;
++(void)showWithAdFrame:(CGRect)frame setAdImage:(setAdImageBlock)setAdImage showFinishWithJump:(clickJump)clickJump showFinishWithWait:(showFinishBlock)waitForFinish;
 
+/* 加载本地图片接口 */
++(void)showWithAdFrame:(CGRect)frame setLocalAdImagePath:(setAdImageBlock)setAdImage showFinish:(showFinishBlock)showFinish;
 /**
  *  设置广告数据
  *
@@ -76,6 +83,10 @@ typedef void(^showFinishBlock)();
  */
 -(void)setImageUrl:(NSString*)imageUrl duration:(NSInteger)duration skipType:(SkipType)skipType options:(XHWebImageOptions)options completed:(XHWebImageCompletionBlock)completedBlock click:(clickBlock)click;
 
+/* 本地图片 */
+-(void)setLocalImagePath:(NSString *)imagePath duration:(NSInteger)duration skipType:(SkipType)skipType options:(XHWebImageOptions)options completed:(XHWebImageCompletionBlock)completedBlock click:(clickBlock)click;
+/* 区分用户是点击了跳过还是等待 */
++(void)showWithAdFrame:(CGRect)frame setLocalAdImagePath:(setAdImageBlock)setAdImage showFinishWithJump:(clickJump)clickJump showFinishWithWait:(showFinishBlock)waitForFinish;
 /**
  *  清除图片本地缓存
  */
