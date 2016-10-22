@@ -76,7 +76,7 @@ static NSInteger const noDataDefaultDuration = 3;
     /* 对于4s进行图片裁剪适配 */
     BOOL *isFour;
     CGFloat FourScreenWidth = 320.0f;
-    if ([UIScreen mainScreen].bounds.size.width <= FourScreenWidth) {
+    if ([UIScreen mainScreen].bounds.size.width < FourScreenWidth) {
         isFour = YES;
     } else {
         isFour = NO;
@@ -86,7 +86,8 @@ static NSInteger const noDataDefaultDuration = 3;
 - (void)setLocalImageWithDevicesIsFour:(BOOL)isFour withImagePath:(NSString *)imagePath{
     _adImgView.image = [UIImage imageWithContentsOfFile:imagePath];
     if (isFour) {
-        _adImgView.contentMode = UIViewContentModeTop;
+        _adImgView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+        _adImgView.contentMode = UIViewContentModeScaleToFill;
         _adImgView.clipsToBounds = YES;
     }
 }
