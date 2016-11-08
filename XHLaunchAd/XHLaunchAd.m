@@ -8,7 +8,8 @@
 
 #import "XHLaunchAd.h"
 #import "XHImageCache.h"
-#import "UIButton+XHEnlarged.h"
+#import "XHSkipButton+XHEnlarged.h"
+#import "XHSkipButton.h"
 
 /**
  *  未检测到广告数据,启动页默认停留时间
@@ -19,7 +20,7 @@ static NSInteger const noDataDefaultDuration = 3;
 
 @property(nonatomic,strong)UIImageView *launchImgView;
 @property(nonatomic,strong)UIImageView *adImgView;
-@property(nonatomic,strong)UIButton *skipButton;
+@property(nonatomic,strong)XHSkipButton *skipButton;
 @property(nonatomic,assign)NSInteger duration;
 @property(nonatomic,copy)dispatch_source_t noDataTimer;
 @property(nonatomic,copy)dispatch_source_t skipButtonTimer;
@@ -221,7 +222,7 @@ static NSInteger const noDataDefaultDuration = 3;
     if(_skipButton == nil)
     {
         float n = [UIScreen mainScreen].bounds.size.width/1242.f;
-        _skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _skipButton = [XHSkipButton buttonWithType:UIButtonTypeCustom];
         _skipButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-459*n,1998*n, 369*n, 120*n);
         _skipButton.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         _skipButton.layer.cornerRadius = 5;

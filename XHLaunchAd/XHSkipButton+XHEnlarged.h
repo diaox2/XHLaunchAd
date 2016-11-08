@@ -7,8 +7,9 @@
 //  代码地址:https://github.com/CoderZhuXH/XHLaunchAd
 
 #import <UIKit/UIKit.h>
+#import "XHSkipButton.h"
 
-@interface UIButton (XHEnlarged)
+@interface XHSkipButton (XHEnlarged)
 
 /**
  *  扩大button点击区域,4边设置相同值

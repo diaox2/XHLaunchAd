@@ -6,7 +6,7 @@
 //  Copyright © 2016年 CoderZhuXH. All rights reserved.
 //  代码地址:https://github.com/CoderZhuXH/XHLaunchAd
 
-#import "UIButton+XHEnlarged.h"
+#import "XHSkipButton+XHEnlarged.h"
 #import "objc/runtime.h"
 
 static char topEdgeKey;
@@ -14,7 +14,7 @@ static char leftEdgeKey;
 static char bottomEdgeKey;
 static char rightEdgeKey;
 
-@implementation UIButton (XHEnlarged)
+@implementation XHSkipButton (XHEnlarged)
 
 -(void)setEnlargedEdge:(CGFloat)enlargedEdge
 {
